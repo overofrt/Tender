@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: tender_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: securepassword
+      POSTGRES_DB: tenders_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  bot:
+    build: .
+    container_name: tender_bot_app
+    depends_on:
+      - db
+    environment:
+      - BOT_TOKEN=9054990690:AAFBF-X2vSb6gceA-u4rjLLELec4Mumioc8
+      - DATABASE_URL=postgresql+asyncpg://postgres:securepassword@db:5432/tenders_db
+      - OPENAI_API_KEY=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
+    restart: always
+
+volumes:
+  pgdata:
