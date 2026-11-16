@@ -4,7 +4,7 @@ from config import settings
 from loguru import logger
 
 MODEL = "gemini-flash-latest"
-URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
 
 
 async def analyze_tender_with_ai(title: str, description: str) -> dict:
