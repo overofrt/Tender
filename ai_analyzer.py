@@ -9,7 +9,7 @@ client = openai.AsyncOpenAI(
 
 async def analyze_tender_with_ai(title: str, description: str) -> dict:
     print("🤖 [DEBUG] Отправка запроса к OpenAI API...")
-    
+     
     prompt = f"""
     Ты — эксперт по анализу государственных и коммерческих тендеров в сфере инженерии, проектирования и строительства.
     Проанализируй следующий тендер и верни ответ строго в формате:
