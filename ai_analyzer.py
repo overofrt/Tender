@@ -1,19 +1,19 @@
-import openai
+import re
+import httpx
 from config import settings
 from loguru import logger
 
-client = openai.AsyncOpenAI(
-    api_key=settings.OPENAI_API_KEY,
-    timeout=15.0
-)
+MODEL = "gemini-2.5-flash"
+URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+
 
 async def analyze_tender_with_ai(title: str, description: str) -> dict:
-    print("🤖 [DEBUG] Отправка запроса к OpenAI API...")
-     
+    logger.info("Отправка запроса к Gemini API...")
+
     prompt = f"""
     Ты — эксперт по анализу государственных и коммерческих тендеров в сфере инженерии, проектирования и строительства.
     Проанализируй следующий тендер и верни ответ строго в формате:
-    РЕВЕЛАНТЕН: [Да/Нет]
+    РЕЛЕВАНТЕН: [Да/Нет]
     ПРИЧИНА: [Краткое обоснование на русском языке]
     СУТЬ: [Краткая выжимка технического задания в 2-3 предложениях на русском языке]
 
@@ -22,25 +22,27 @@ async def analyze_tender_with_ai(title: str, description: str) -> dict:
     """
 
     try:
-        response = await client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(
+                URL,
+                headers={"x-goog-api-key": settings.GEMINI_API_KEY},
+                json={
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {"temperature": 0.3},
+                },
+            )
+            response.raise_for_status()
+            data = response.json()
+
+        result_text = data["candidates"][0]["content"]["parts"][0]["text"]
+        is_relevant = bool(
+            re.search(r"РЕЛЕВАНТЕН:\s*\**\s*ДА", result_text.upper())
         )
-        
-        result_text = response.choices[0].message.content
-        print("🤖 [DEBUG] Ответ от OpenAI успешно получен!")
-        
-        is_relevant = "ДА" in result_text.upper() or "РЕВЕЛАНТЕН: ДА" in result_text.upper()
-        
-        return {
-            "is_relevant": is_relevant,
-            "raw_analysis": result_text
-        }
+        return {"is_relevant": is_relevant, "raw_analysis": result_text}
+
     except Exception as e:
-        print(f"❌ [DEBUG ERROR] Ошибка OpenAI: {e}")
-        logger.error(f"Ошибка при обращении к OpenAI: {e}")
+        logger.error(f"Ошибка при обращении к Gemini: {e}")
         return {
             "is_relevant": False,
-            "raw_analysis": f"Помилка запиту до OpenAI (таймаут/мережа): {e}"
+            "raw_analysis": "Помилка запиту до AI. Деталі дивіться в логах Render.",
         }
