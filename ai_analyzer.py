@@ -19,8 +19,7 @@ async def analyze_tender_with_ai(title: str, description: str) -> dict:
 
     Название тендера: {title}
     Описание: {description}
-    """
-
+    
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
@@ -28,10 +27,8 @@ async def analyze_tender_with_ai(title: str, description: str) -> dict:
                 headers={"x-goog-api-key": settings.GEMINI_API_KEY},
                 json={
                     "contents": [{"parts": [{"text": prompt}]}],
-                    "generationConfig": {
-                        "temperature": 0.3,
-                        "thinkingConfig": {"thinkingBudget": 0},
-                    },
+                    "generationConfig": {"temperature": 0.3},
+                }
                 },
             )
             response.raise_for_status()
