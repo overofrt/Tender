@@ -1,5 +1,6 @@
 aiogram>=3.4
-sqlalchemy>=2.0
+sqlalchemy[asyncio]>=2.0
+greenlet
 aiosqlite
 pydantic-settings
 loguru
