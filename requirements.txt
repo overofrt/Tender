@@ -1,6 +1,5 @@
 python-telegram-bot>=21
 flask
-import asyncio
 import sys
 from loguru import logger
 from config import settings
