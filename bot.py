@@ -8,7 +8,7 @@ from database import async_session_maker
 from models import TenderDB
 from ai_analyzer import analyze_tender_with_ai
 
-bot = Bot(token=settings.9054990690:AAFBF-X2vSb6gceA-u4rjLLELec4Mumioc8)
+bot = Bot(token=settings.BOT_TOKEN)
 dp = Dispatcher()
 
 def get_main_menu():
