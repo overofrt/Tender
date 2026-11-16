@@ -3,7 +3,7 @@ import httpx
 from config import settings
 from loguru import logger
 
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-flash-latest"
 URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 
