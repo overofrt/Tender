@@ -109,7 +109,7 @@ async def process_check_new(callback: types.CallbackQuery):
     except Exception as e:
         await bot.send_message(
             chat_id=chat_id,
-            text=f"❌ **Помилка під час виконання:**\n<code>{str(e)}</code>",
+            text=f"❌ **Ошибка во время исполения:**\n<code>{str(e)}</code>",
             parse_mode="HTML",
             reply_markup=get_main_menu()
         )
