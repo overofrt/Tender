@@ -30,6 +30,14 @@ async def cmd_start(message: types.Message):
         "Используйте кнопки ниже для навигации:",
         reply_markup=get_main_menu()
     )
+    
+    @dp.callback_query(F.data == "check_new")
+async def process_check_new(callback: types.CallbackQuery):
+    await callback.answer()       
+    chat_id = callback.message.chat.id
+
+    await callback.message.answer("⏳ Запускаю проверку и AI-анализ новых тендеров...")
+    ...
 
 @dp.callback_query(F.data == "status")
 async def process_status(callback: types.CallbackQuery):
