@@ -3,23 +3,9 @@ import httpx
 from config import settings
 from loguru import logger
 
-MODEL = "gemini-flash-latest"
-URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
+MODEL = "gemini-2.5-flash"
+URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.post(
-                URL,
-                headers={"x-goog-api-key": settings.GEMINI_API_KEY},
-                json={
-                    "contents": [{"parts": [{"text": prompt}]}],
-                    "generationConfig": {
-                        "temperature": 0.3,
-                        "thinkingConfig": {"thinkingBudget": 0},
-                    },
-                },
-            )
-            response.raise_for_status()
-            data = response.json()
 
 async def analyze_tender_with_ai(title: str, description: str) -> dict:
     logger.info("Отправка запроса к Gemini API...")
@@ -36,13 +22,16 @@ async def analyze_tender_with_ai(title: str, description: str) -> dict:
     """
 
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
                 URL,
                 headers={"x-goog-api-key": settings.GEMINI_API_KEY},
                 json={
                     "contents": [{"parts": [{"text": prompt}]}],
-                    "generationConfig": {"temperature": 0.3},
+                    "generationConfig": {
+                        "temperature": 0.3,
+                        "thinkingConfig": {"thinkingBudget": 0},
+                    },
                 },
             )
             response.raise_for_status()
@@ -55,7 +44,7 @@ async def analyze_tender_with_ai(title: str, description: str) -> dict:
         return {"is_relevant": is_relevant, "raw_analysis": result_text}
 
     except Exception as e:
-        logger.error(f"Ошибка при обращении к Gemini: {e}")
+        logger.error(f"Ошибка при обращении к Gemini: {type(e).__name__}: {e!r}")
         return {
             "is_relevant": False,
             "raw_analysis": "Помилка запиту до AI. Деталі дивіться в логах Render.",
