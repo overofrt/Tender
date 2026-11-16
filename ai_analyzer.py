@@ -6,6 +6,20 @@ from loguru import logger
 MODEL = "gemini-flash-latest"
 URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
 
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
+                URL,
+                headers={"x-goog-api-key": settings.GEMINI_API_KEY},
+                json={
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {
+                        "temperature": 0.3,
+                        "thinkingConfig": {"thinkingBudget": 0},
+                    },
+                },
+            )
+            response.raise_for_status()
+            data = response.json()
 
 async def analyze_tender_with_ai(title: str, description: str) -> dict:
     logger.info("Отправка запроса к Gemini API...")
